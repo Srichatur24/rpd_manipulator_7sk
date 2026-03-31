@@ -1,0 +1,13 @@
+link:
+  name: end_effector_link
+  xyz: 0.0 0.0 0.0
+  color: green
+  radius: 0.005
+
+#---------------------------------------------------------------
+
+joint:
+  name: end_effector_joint
+  parent: gripper_base_link
+  child: end_effector_link
+  xyz: 0.0970388 0.0 -0.0011

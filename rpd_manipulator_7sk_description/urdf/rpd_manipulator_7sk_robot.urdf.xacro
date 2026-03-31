@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- link macro -->
+  <xacro:macro name="Link" params="l">
+    <link name="${l['name']}">
+        <visual>
+          <origin rpy="0 0 0" xyz="${l['xyz']}" />
+          <geometry>
+            <mesh filename="file://${desc_pkg}/meshes/${l['name']}.stl" scale="0.001 0.001 0.001" />
+          </geometry>
+          <material name="${l['color']}" />
+        </visual>
+        <collision>
+          <origin rpy="0 0 0" xyz="${l['xyz']}" />
+          <geometry>
+            <mesh filename="file://${desc_pkg}/meshes/${l['name']}.stl" scale="0.001 0.001 0.001" />
+          </geometry>
+        </collision>
+        <inertial>
+      <mass value="${l['mass']}" />
+      <origin xyz="${l['com']}" rpy="0 0 0"/>
+      <inertia ixx="${l['inertia']['ixx']}" ixy="0" ixz="0"
+               iyy="${l['inertia']['iyy']}" iyz="0"
+               izz="${l['inertia']['izz']}" />
+    </inertial>
+    </link>
+  </xacro:macro>
+
+
+ <!-- joint macro -->
+  <xacro:macro name="Joint" params="j">
+    <joint name="${j['name']}" type="${j['type']}">
+      <origin rpy="0 0 0" xyz="${j['xyz']}" />
+      <limit effort="${j['effort']}" lower="${j['lower']}" upper="${j['upper']}" velocity="${j['velocity']}" />
+      <axis xyz="${j['axis']}" />
+      <parent link="${j['parent']}" />
+      <child link="${j['child']}" />
+      <xacro:if value="${j['mimic']['use']}">
+        <mimic joint="${j['mimic']['joint']}" multiplier="${j['mimic']['multiplier']}" />
+      </xacro:if>
+    </joint>
+  </xacro:macro>
+
+
+  <!-- world link & world to base link joint-->
+  <link name="world" />
+  <joint name="${fixed_joint}" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0 0" />
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+
+  <!-- links and joitns -->
+  <xacro:macro name="link_loop" params="i:=0">
+    <xacro:if value="${i &lt; len(links)}">
+      <xacro:Link l="${links[i]}" />
+      <xacro:link_loop i="${i+1}" />
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="joint_loop" params="i:=0">
+    <xacro:if value="${i &lt; len(joints)}">
+      <xacro:Joint j="${joints[i]}" />
+      <xacro:joint_loop i="${i+1}" />
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:link_loop />
+  <xacro:joint_loop />
+
+
+    <!-- end effector link -->
+  <link name="${ee['link']['name']}">
+    <visual>
+      <origin rpy="0 0 0" xyz="${ee['link']['xyz']}" />
+      <geometry>
+        <sphere radius="${ee['link']['radius']}" />
+      </geometry>
+      <material name="${ee['link']['color']}"/>
+    </visual>
+  </link>
+  <!-- end effector joint -->
+  <joint name="${ee['joint']['name']}" type="fixed">
+    <origin rpy="0 0 0" xyz="${ee['joint']['xyz']}" />
+    <parent link="${ee['joint']['parent']}" />
+    <child link="${ee['joint']['child']}" />
+  </joint>
+
+</robot>

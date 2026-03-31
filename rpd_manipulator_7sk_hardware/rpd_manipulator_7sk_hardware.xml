@@ -1,0 +1,7 @@
+<library path="rpd_manipulator_7sk_hardware">
+    <class name="rpd_manipulator_7sk_hardware/RPDManipulator7SKHardwareInterface"
+            type="rpd_manipulator_7sk_hardware::RPDManipulator7SKHardwareInterface"
+            base_class_type="hardware_interface::SystemInterface">
+        <description>hardware interface for RPD Manipulator 7SK which uses Waveshare ST/SC serial servo control library</description>
+    </class>
+</library>

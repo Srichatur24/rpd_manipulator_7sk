@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<robot name="rpd_manipulator_7sk" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="port" default="/dev/ttyACM0" />
+  <xacro:arg name="baudrate" default="1000000" />
+  <xacro:arg name="use_sim" default="false" />
+  <xacro:arg name="use_mock_hardware" default="false" />
+
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+
+  <material name="red">
+    <color rgba="1 0 0 1"/>
+  </material>
+
+  <material name="green">
+    <color rgba="0 1 0 1"/>
+  </material>
+
+  <material name="blue">
+    <color rgba="0 0 1 1"/>
+  </material>
+
+  <material name="white">
+    <color rgba="1 1 1 1"/>
+  </material>
+
+  <xacro:property name="desc_pkg" value="$(find rpd_manipulator_7sk_description)" />
+  <xacro:property name="fixed_joint" value="fixed_joint" />
+  <xacro:property name="config" value="${desc_pkg}/config/" />
+  <xacro:property name="links" value="${xacro.load_yaml(config + 'links.yaml')}" />
+  <xacro:property name="joints" value="${xacro.load_yaml(config + 'joints.yaml')}" />
+  <xacro:property name="ee" value="${xacro.load_yaml(config + 'ee.yaml')}" />
+
+  <xacro:include filename="${desc_pkg}/urdf/rpd_manipulator_7sk_robot.urdf.xacro"/>
+  <xacro:include filename="${desc_pkg}/urdf/rpd_manipulator_7sk_gazebo.xacro"/>
+  <xacro:include filename="${desc_pkg}/urdf/rpd_manipulator_7sk_ros2_control.xacro"/>
+
+</robot>

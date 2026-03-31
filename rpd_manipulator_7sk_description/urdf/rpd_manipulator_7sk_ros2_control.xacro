@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <ros2_control name="RPDManipulator7SKSystem" type="system">
+
+    <hardware>
+      <xacro:if value="$(arg use_sim)">
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </xacro:if>
+      <xacro:unless value="$(arg use_sim)">
+        <xacro:if value="$(arg use_mock_hardware)">
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="state_following_offset">0.0</param>
+        </xacro:if>
+        <xacro:unless value="$(arg use_mock_hardware)">
+          <plugin>rpd_manipulator_7sk_hardware/RPDManipulator7SKHardwareInterface</plugin>
+          <param name="port">$(arg port)</param>
+          <param name="baudrate">$(arg baudrate)</param>
+        </xacro:unless>
+      </xacro:unless>
+    </hardware>
+
+    <xacro:macro name="joint_control" params="j">
+      <joint name="${j['name']}">
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+        <xacro:unless value="${j['mimic']['use']}">
+          <command_interface name="position"/>
+          <param name="motor_id">${j['motor_id']}</param>
+        </xacro:unless>
+        <xacro:if value="${j['mimic']['use']}">
+          <param name="mimic">${j['mimic']['joint']}</param>
+          <param name="multiplier">${j['mimic']['multiplier']}</param>
+        </xacro:if>
+      </joint>
+    </xacro:macro>
+
+  <xacro:macro name="joint_control_loop" params="i:=0">
+    <xacro:if value="${i &lt; len(joints)}">
+      <xacro:if value="$(arg use_sim)">
+        <xacro:joint_control j="${joints[i]}" />
+      </xacro:if>
+      <xacro:unless value="$(arg use_sim)">
+      <xacro:unless value="${joints[i]['mimic']['use']}">
+        <xacro:joint_control j="${joints[i]}" />
+      </xacro:unless>
+      </xacro:unless>
+      <xacro:joint_control_loop i="${i+1}" />
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:joint_control_loop />
+
+  </ros2_control>
+
+</robot>

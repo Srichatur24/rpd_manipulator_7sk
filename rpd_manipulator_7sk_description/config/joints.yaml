@@ -1,0 +1,144 @@
+- name: joint_1
+  type: revolute
+  motor_id: 71
+  parent: base_link
+  child: link_1
+  xyz: 0.0 0.0 0.0527
+  axis: 0 0 -1
+  effort: 2.94
+  lower: -3.1415926535897932384626433832795
+  upper: 3.1415926535897932384626433832795
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: joint_2
+  type: revolute
+  motor_id: 72
+  xyz: 0.0 0.0 0.04025
+  parent: link_1
+  child: link_2
+  axis: 0 1 0
+  effort: 2.94
+  lower: -1.5707963267948966192313216916398
+  upper: 1.5707963267948966192313216916398
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: joint_3
+  type: revolute
+  motor_id: 73
+  xyz: -0.0125 0.0 0.0702
+  parent: link_2
+  child: link_3
+  axis: 0 0 -1
+  effort: 2.94
+  lower: -3.1415926535897932384626433832795
+  upper: 3.1415926535897932384626433832795
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: joint_4
+  type: revolute
+  motor_id: 74
+  xyz: 0.0425 0.0 0.1375
+  parent: link_3
+  child: link_4
+  axis: 0 1 0
+  effort: 2.94
+  lower: -1.5707963267948966192313216916398
+  upper: 1.047197551196597746154214461093
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: joint_5
+  type: revolute
+  motor_id: 75
+  xyz: 0.0702 0.0 0.0125
+  parent: link_4
+  child: link_5
+  axis: -1 0 0
+  effort: 2.94
+  lower: -3.1415926535897932384626433832795
+  upper: 3.1415926535897932384626433832795
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: joint_6
+  type: revolute
+  motor_id: 76
+  xyz: 0.0402502 0.0 0.0
+  parent: link_5
+  child: link_6
+  axis: 0 0 1
+  effort: 2.94
+  lower: -1.5707963267948966192313216916398
+  upper: 1.5707963267948966192313216916398
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: joint_7
+  type: revolute
+  motor_id: 77
+  xyz: 0.0647495 0.0 0.0
+  parent: link_6
+  child: gripper_base_link
+  axis: 0 1 0
+  effort: 2.94
+  lower: -1.5707963267948966192313216916398
+  upper: 1.5707963267948966192313216916398
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: gripper_left_joint
+  type: prismatic
+  motor_id: 78
+  xyz: 0.0670388 0.0 -0.0011
+  parent: gripper_base_link
+  child: gripper_left_link
+  axis: 0 1 0
+  effort: 2.94
+  lower: -0.019
+  upper: 0.019
+  velocity: 4.71238898
+  mimic:
+    use: false
+
+#---------------------------------------------------------------
+
+- name: gripper_right_joint
+  type: prismatic
+  xyz: 0.0670388 0.0 -0.0011
+  parent: gripper_base_link
+  child: gripper_right_link
+  axis: 0 -1 0
+  effort: 2.94
+  lower: -0.019
+  upper: 0.019
+  velocity: 4.71238898
+  mimic:
+    use: true
+    joint: gripper_left_joint
+    multiplier: 1.0
+
+#---------------------------------------------------------------

@@ -1,0 +1,6 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: rpd_manipulator_7sk_description
+    relative_path: urdf/rpd_manipulator_7sk.urdf.xacro
+  srdf:
+    relative_path: config/rpd_manipulator_7sk.srdf
