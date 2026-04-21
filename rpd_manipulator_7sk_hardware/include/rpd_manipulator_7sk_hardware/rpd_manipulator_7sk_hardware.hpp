@@ -1,5 +1,5 @@
-#ifndef rpd_manipulator_7sk_HARDWARE_INTERFACE_HPP
-#define rpd_manipulator_7sk_HARDWARE_INTERFACE_HPP
+#ifndef RPD_MANIPULATOR_7SK_HARDWARE_INTERFACE_HPP
+#define RPD_MANIPULATOR_7SK_HARDWARE_INTERFACE_HPP
 
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
@@ -39,7 +39,6 @@ private:
     std::string port_;
     int baudrate_;
     size_t num_of_joints_;
-    std::vector<hardware_interface::ComponentInfo> joints_;
 
     std::vector<double> hw_positions_;
     std::vector<double> hw_velocities_;
@@ -54,4 +53,4 @@ private:
 
 } // namespace rpd_manipulator_7sk_hardware
 
-#endif // rpd_manipulator_7sk_HARDWARE_INTERFACE_HPP
+#endif // RPD_MANIPULATOR_7SK_HARDWARE_INTERFACE_HPP

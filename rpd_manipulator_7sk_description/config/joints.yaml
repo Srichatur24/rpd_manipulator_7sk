@@ -5,10 +5,10 @@
   child: link_1
   xyz: 0.0 0.0 0.0527
   axis: 0 0 -1
-  effort: 2.94
-  lower: -3.1415926535897932384626433832795
-  upper: 3.1415926535897932384626433832795
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -3.14159
+  upper: 3.14159
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -21,10 +21,10 @@
   parent: link_1
   child: link_2
   axis: 0 1 0
-  effort: 2.94
-  lower: -1.5707963267948966192313216916398
-  upper: 1.5707963267948966192313216916398
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -1.570796
+  upper: 1.570796
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -37,10 +37,10 @@
   parent: link_2
   child: link_3
   axis: 0 0 -1
-  effort: 2.94
-  lower: -3.1415926535897932384626433832795
-  upper: 3.1415926535897932384626433832795
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -3.14159
+  upper: 3.14159
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -53,10 +53,10 @@
   parent: link_3
   child: link_4
   axis: 0 1 0
-  effort: 2.94
-  lower: -1.5707963267948966192313216916398
-  upper: 1.047197551196597746154214461093
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -1.570796
+  upper: 1.04719755
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -69,10 +69,10 @@
   parent: link_4
   child: link_5
   axis: -1 0 0
-  effort: 2.94
-  lower: -3.1415926535897932384626433832795
-  upper: 3.1415926535897932384626433832795
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -3.14159
+  upper: 3.14159
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -85,10 +85,10 @@
   parent: link_5
   child: link_6
   axis: 0 0 1
-  effort: 2.94
-  lower: -1.5707963267948966192313216916398
-  upper: 1.5707963267948966192313216916398
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -1.570796
+  upper: 1.570796
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -101,10 +101,10 @@
   parent: link_6
   child: gripper_base_link
   axis: 0 1 0
-  effort: 2.94
-  lower: -1.5707963267948966192313216916398
-  upper: 1.5707963267948966192313216916398
-  velocity: 4.71238898
+  effort: 2.5
+  lower: -1.570796
+  upper: 1.570796
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -113,14 +113,14 @@
 - name: gripper_left_joint
   type: prismatic
   motor_id: 78
-  xyz: 0.0670388 0.0 -0.0011
+  xyz: 0.0670388 -0.0176793 -0.0011
   parent: gripper_base_link
   child: gripper_left_link
   axis: 0 1 0
-  effort: 2.94
-  lower: -0.019
-  upper: 0.019
-  velocity: 4.71238898
+  effort: 2.5
+  lower: 0.0
+  upper: 0.037
+  velocity: 2.094395
   mimic:
     use: false
 
@@ -128,14 +128,14 @@
 
 - name: gripper_right_joint
   type: prismatic
-  xyz: 0.0670388 0.0 -0.0011
+  xyz: 0.0670388 0.0176793 -0.0011
   parent: gripper_base_link
   child: gripper_right_link
   axis: 0 -1 0
-  effort: 2.94
-  lower: -0.019
-  upper: 0.019
-  velocity: 4.71238898
+  effort: 2.5
+  lower: 0.0
+  upper: 0.037
+  velocity: 3.14159
   mimic:
     use: true
     joint: gripper_left_joint

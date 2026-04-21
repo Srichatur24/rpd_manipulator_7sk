@@ -8,8 +8,7 @@ namespace rpd_manipulator_7sk_hardware {
         if(hardware_interface::SystemInterface::on_init(params) != hardware_interface::CallbackReturn::SUCCESS)
             return hardware_interface::CallbackReturn::ERROR;
         info_ = params.hardware_info;
-        joints_ = info_.joints;
-        num_of_joints_ = joints_.size();
+        num_of_joints_ = info_.joints.size();
 
         port_ = info_.hardware_parameters["port"];
         baudrate_ = std::stoi(info_.hardware_parameters["baudrate"]);
@@ -21,7 +20,7 @@ namespace rpd_manipulator_7sk_hardware {
         motor_ids_uint8_.resize(num_of_joints_);
 
         for (size_t i = 0; i < num_of_joints_; i++) {
-            motor_ids_[i] = std::stoi(joints_[i].parameters.at("motor_id"));
+            motor_ids_[i] = std::stoi(info_.joints[i].parameters.at("motor_id"));
             motor_ids_uint8_[i] = static_cast<uint8_t>(motor_ids_[i]);
         }
         return hardware_interface::CallbackReturn::SUCCESS;
@@ -30,7 +29,7 @@ namespace rpd_manipulator_7sk_hardware {
     std::vector<hardware_interface::StateInterface> RPDManipulator7SKHardwareInterface::export_state_interfaces() {
         std::vector<hardware_interface::StateInterface> state_interfaces;
         for (size_t i = 0; i < num_of_joints_; i++) {
-            auto joint_name = joints_[i].name;
+            auto joint_name = info_.joints[i].name;
             state_interfaces.emplace_back(hardware_interface::StateInterface(joint_name, hardware_interface::HW_IF_POSITION, &hw_positions_[i]));
             state_interfaces.emplace_back(hardware_interface::StateInterface(joint_name, hardware_interface::HW_IF_VELOCITY, &hw_velocities_[i]));
         }
@@ -40,7 +39,7 @@ namespace rpd_manipulator_7sk_hardware {
     std::vector<hardware_interface::CommandInterface> RPDManipulator7SKHardwareInterface::export_command_interfaces() {
         std::vector<hardware_interface::CommandInterface> command_interfaces;
         for (size_t i = 0; i < num_of_joints_; i++) {
-            auto joint_name = joints_[i].name;
+            auto joint_name = info_.joints[i].name;
             command_interfaces.emplace_back(hardware_interface::CommandInterface(joint_name, hardware_interface::HW_IF_POSITION, &cmd_positions_[i]));
         }
         return command_interfaces;
@@ -58,10 +57,20 @@ namespace rpd_manipulator_7sk_hardware {
             driver_.EnableTorque(motor_ids_[i], 1);
             usleep(50000);
         }
+        std::vector<s16> positions(num_of_joints_, 2048);
+        std::vector<u16> velocities(num_of_joints_, 1024);
+        std::vector<u8> accelerations(num_of_joints_, 5);
+        driver_.SyncWritePosEx(motor_ids_uint8_.data(), num_of_joints_, positions.data(), velocities.data(), accelerations.data());
+        usleep(4096000); //[(P1-P0)/V]*1000+[V/(A*100)]*1000
         return hardware_interface::CallbackReturn::SUCCESS;
     }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     hardware_interface::CallbackReturn RPDManipulator7SKHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &) {
+        std::vector<s16> positions{2048, 2190, 2048, 2730, 2048, 2048, 2320, 1024};
+        std::vector<u16> velocities(num_of_joints_, 1024);
+        std::vector<u8> accelerations(num_of_joints_, 5);
+        driver_.SyncWritePosEx(motor_ids_uint8_.data(), num_of_joints_, positions.data(), velocities.data(), accelerations.data());
+        usleep(4096000); //[(P1-P0)/V]*1000+[V/(A*100)]*1000
         for (size_t i = 0; i < num_of_joints_; i++) {
             driver_.EnableTorque(motor_ids_[i], 0);
             usleep(50000);
@@ -82,29 +91,29 @@ namespace rpd_manipulator_7sk_hardware {
             if (!driver_.syncReadPacketRx(motor_ids_uint8_[i], rx_packet_)) continue;
             int16_t raw_pos = driver_.syncReadRxPacketToWrod(15);
             int16_t raw_speed = driver_.syncReadRxPacketToWrod(15);
-            hw_positions_[i] = (raw_pos / 4096.0 - 0.5) * 2.0 * M_PI;
-            hw_velocities_[i] = raw_speed * 0.0146 * 2.0 * M_PI / 60.0;
+            hw_positions_[i] = (raw_pos / 4095.0 - 0.5) * 2.0 * M_PI;
+            hw_velocities_[i] = raw_speed * 0.001533980787885641;
         }
         if (driver_.syncReadPacketRx(motor_ids_uint8_[i], rx_packet_)) {
             int16_t raw_pos = driver_.syncReadRxPacketToWrod(15);
             int16_t raw_speed = driver_.syncReadRxPacketToWrod(15);
-            hw_positions_[i] = (raw_pos / 4096.0 - 0.5) * (4096 / 50625);
-            hw_velocities_[i] = raw_speed * 0.0146 * (4096 / 50625) / 60.0;
+            hw_positions_[i] = raw_pos * 0.00001806640625;
+            hw_velocities_[i] = raw_speed * 0.00001806640625;
         };
         return hardware_interface::return_type::OK;
     }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     hardware_interface::return_type RPDManipulator7SKHardwareInterface::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
         std::vector<s16> positions(num_of_joints_, 0);
-        std::vector<u16> velocities(num_of_joints_, 400);
-        std::vector<u8> accelerations(num_of_joints_, 50);
+        std::vector<u16> velocities(num_of_joints_, 2048); // max: 3072
+        std::vector<u8> accelerations(num_of_joints_, 5); // max: 150
         size_t i;
         for (i = 0; i < num_of_joints_ - 1; i++) {
-            int target_pos = static_cast<int>((cmd_positions_[i] / M_PI / 2.0 + 0.5) * 4096.0);
-            positions[i] = static_cast<s16>(std::max(0, std::min(4096, target_pos)));
+            int target_pos = static_cast<int>((cmd_positions_[i] / M_PI / 2.0 + 0.5) * 4095.0);
+            positions[i] = static_cast<s16>(std::max(0, std::min(4095, target_pos)));
         }
-        int target_pos = static_cast<int>((cmd_positions_[i] / 4096 * 50625 + 0.5) * 4096.0);
-        positions[i] = static_cast<s16>(std::max(0, std::min(4096, target_pos)));
+        int target_pos = static_cast<int>((cmd_positions_[i] / 0.00001806640625));
+        positions[i] = static_cast<s16>(std::max(0, std::min(4095, target_pos)));
         driver_.SyncWritePosEx(motor_ids_uint8_.data(), num_of_joints_, positions.data(), velocities.data(), accelerations.data());
         return hardware_interface::return_type::OK;
     }
