@@ -4,6 +4,7 @@ from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
+from launch_param_builder import ParameterBuilder
 from moveit_configs_utils import MoveItConfigsBuilder
 from pathlib import Path
 from moveit_configs_utils.launches import generate_move_group_launch, generate_moveit_rviz_launch
@@ -16,6 +17,8 @@ def generate_launch_description():
 
     launch_arguments = [
         DeclareLaunchArgument('start_rviz', default_value='true'),
+        DeclareLaunchArgument('start_move_group', default_value='true'),
+        DeclareLaunchArgument('start_moveit_servo', default_value='false'),
         DeclareLaunchArgument('use_sim', default_value='false'),
         DeclareLaunchArgument('publish_robot_description_semantic', default_value='true'),
         DeclareLaunchArgument('allow_trajectory_execution', default_value='true'),
@@ -25,6 +28,8 @@ def generate_launch_description():
     ]
 
     start_rviz = LaunchConfiguration('start_rviz')
+    start_move_group = LaunchConfiguration('start_move_group')
+    start_moveit_servo = LaunchConfiguration('start_moveit_servo')
     use_sim = LaunchConfiguration('use_sim')
     publish_robot_description_semantic = LaunchConfiguration('publish_robot_description_semantic')
     allow_trajectory_execution = LaunchConfiguration('allow_trajectory_execution')
@@ -33,9 +38,27 @@ def generate_launch_description():
     disable_capabilities = ParameterValue(LaunchConfiguration('disable_capabilities'), value_type=str)
 
 
+    servo_node = Node(
+        package="moveit_servo",
+        executable="servo_node",
+        condition=IfCondition(start_moveit_servo),
+        output="screen",
+        parameters=[
+            moveit_config.to_dict(),
+            {
+                "moveit_servo": ParameterBuilder('rpd_manipulator_7sk_moveit_config').yaml("config/moveit_servo_parameters.yaml").to_dict(),
+                "update_period": 0.01,
+                "planning_group_name": "arm",
+                'use_sim_time': use_sim
+            }
+        ],
+    )
+
+
     move_group_node = Node(
         package='moveit_ros_move_group',
         executable='move_group',
+        condition=IfCondition(start_move_group),
         output='screen',
         parameters=[
             moveit_config.to_dict(),
@@ -67,4 +90,4 @@ def generate_launch_description():
     )
 
 
-    return LaunchDescription([*launch_arguments, move_group_node, rviz_node])
+    return LaunchDescription([*launch_arguments, move_group_node, servo_node, rviz_node])

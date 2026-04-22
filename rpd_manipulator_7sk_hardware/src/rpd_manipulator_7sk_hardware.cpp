@@ -105,7 +105,7 @@ namespace rpd_manipulator_7sk_hardware {
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     hardware_interface::return_type RPDManipulator7SKHardwareInterface::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
         std::vector<s16> positions(num_of_joints_, 0);
-        std::vector<u16> velocities(num_of_joints_, 2048); // max: 3072
+        std::vector<u16> velocities(num_of_joints_, 1365); // max: 3072
         std::vector<u8> accelerations(num_of_joints_, 5); // max: 150
         size_t i;
         for (i = 0; i < num_of_joints_ - 1; i++) {
