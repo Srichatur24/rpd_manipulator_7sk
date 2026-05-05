@@ -45,6 +45,7 @@ private:
     std::vector<double> cmd_positions_;
 
     std::vector<int> motor_ids_;
+    std::vector<float> gear_reduction_factors_;
     std::vector<uint8_t> motor_ids_uint8_;
     uint8_t rx_packet_[4];
 

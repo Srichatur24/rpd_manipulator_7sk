@@ -3,12 +3,13 @@
   motor_id: 71
   parent: base_link
   child: link_1
-  xyz: 0.0 0.0 0.0527
+  xyz: 0.0 0.0 0.07211
   axis: 0 0 -1
   effort: 2.5
-  lower: -3.14159
-  upper: 3.14159
-  velocity: 2.094395
+  lower: -1.570796
+  upper: 1.570796
+  gear_reduction: 2.0
+  velocity: 1.840776945
   mimic:
     use: false
 
@@ -17,13 +18,14 @@
 - name: joint_2
   type: revolute
   motor_id: 72
-  xyz: 0.0 0.0 0.04025
+  xyz: 0.0 0.0 0.044202
   parent: link_1
   child: link_2
   axis: 0 1 0
   effort: 2.5
   lower: -1.570796
   upper: 1.570796
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false
@@ -40,6 +42,7 @@
   effort: 2.5
   lower: -3.14159
   upper: 3.14159
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false
@@ -56,6 +59,7 @@
   effort: 2.5
   lower: -1.570796
   upper: 1.04719755
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false
@@ -72,6 +76,7 @@
   effort: 2.5
   lower: -3.14159
   upper: 3.14159
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false
@@ -88,6 +93,7 @@
   effort: 2.5
   lower: -1.570796
   upper: 1.570796
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false
@@ -104,6 +110,7 @@
   effort: 2.5
   lower: -1.570796
   upper: 1.570796
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false
@@ -120,6 +127,7 @@
   effort: 2.5
   lower: 0.0
   upper: 0.037
+  gear_reduction: 1.0
   velocity: 2.094395
   mimic:
     use: false

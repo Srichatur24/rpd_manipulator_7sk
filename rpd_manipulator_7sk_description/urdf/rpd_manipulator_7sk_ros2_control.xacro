@@ -27,6 +27,7 @@
         <xacro:unless value="${j['mimic']['use']}">
           <command_interface name="position"/>
           <param name="motor_id">${j['motor_id']}</param>
+          <param name="gear_reduction">${j['gear_reduction']}</param>
         </xacro:unless>
         <xacro:if value="${j['mimic']['use']}">
           <param name="mimic">${j['mimic']['joint']}</param>

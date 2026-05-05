@@ -18,10 +18,12 @@ namespace rpd_manipulator_7sk_hardware {
         cmd_positions_.resize(num_of_joints_, 0.0);
         motor_ids_.resize(num_of_joints_);
         motor_ids_uint8_.resize(num_of_joints_);
+        gear_reduction_factors_.resize(num_of_joints_);
 
         for (size_t i = 0; i < num_of_joints_; i++) {
             motor_ids_[i] = std::stoi(info_.joints[i].parameters.at("motor_id"));
             motor_ids_uint8_[i] = static_cast<uint8_t>(motor_ids_[i]);
+            gear_reduction_factors_[i] = std::stof(info_.joints[i].parameters.at("gear_reduction"));
         }
         return hardware_interface::CallbackReturn::SUCCESS;
     }
@@ -91,28 +93,28 @@ namespace rpd_manipulator_7sk_hardware {
             if (!driver_.syncReadPacketRx(motor_ids_uint8_[i], rx_packet_)) continue;
             int16_t raw_pos = driver_.syncReadRxPacketToWrod(15);
             int16_t raw_speed = driver_.syncReadRxPacketToWrod(15);
-            hw_positions_[i] = (raw_pos / 4095.0 - 0.5) * 2.0 * M_PI;
-            hw_velocities_[i] = raw_speed * 0.001533980787885641;
+            hw_positions_[i] = (raw_pos / 4095.0 - 0.5) * 2.0 * M_PI / gear_reduction_factors_[i];
+            hw_velocities_[i] = raw_speed * 0.001533980787885641 / gear_reduction_factors_[i];
         }
         if (driver_.syncReadPacketRx(motor_ids_uint8_[i], rx_packet_)) {
             int16_t raw_pos = driver_.syncReadRxPacketToWrod(15);
             int16_t raw_speed = driver_.syncReadRxPacketToWrod(15);
-            hw_positions_[i] = raw_pos * 0.00001806640625;
-            hw_velocities_[i] = raw_speed * 0.00001806640625;
+            hw_positions_[i] = raw_pos * 0.00001806640625  / gear_reduction_factors_[i];
+            hw_velocities_[i] = raw_speed * 0.00001806640625 / gear_reduction_factors_[i];
         };
         return hardware_interface::return_type::OK;
     }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     hardware_interface::return_type RPDManipulator7SKHardwareInterface::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
-        std::vector<s16> positions(num_of_joints_, 0);
+        std::vector<s16> positions(num_of_joints_, 2048);
         std::vector<u16> velocities(num_of_joints_, 1365); // max: 3072
         std::vector<u8> accelerations(num_of_joints_, 5); // max: 150
         size_t i;
         for (i = 0; i < num_of_joints_ - 1; i++) {
-            int target_pos = static_cast<int>((cmd_positions_[i] / M_PI / 2.0 + 0.5) * 4095.0);
+            int target_pos = static_cast<int>((cmd_positions_[i] * gear_reduction_factors_[i] / M_PI / 2.0 + 0.5) * 4095.0);
             positions[i] = static_cast<s16>(std::max(0, std::min(4095, target_pos)));
         }
-        int target_pos = static_cast<int>((cmd_positions_[i] / 0.00001806640625));
+        int target_pos = static_cast<int>((cmd_positions_[i] * gear_reduction_factors_[i] / 0.00001806640625));
         positions[i] = static_cast<s16>(std::max(0, std::min(4095, target_pos)));
         driver_.SyncWritePosEx(motor_ids_uint8_.data(), num_of_joints_, positions.data(), velocities.data(), accelerations.data());
         return hardware_interface::return_type::OK;
