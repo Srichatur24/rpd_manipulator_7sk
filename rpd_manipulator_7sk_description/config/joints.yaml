@@ -9,7 +9,7 @@
   lower: -1.570796
   upper: 1.570796
   gear_reduction: 2.0
-  velocity: 1.840776945
+  velocity: 2.094395
   mimic:
     use: false
 
